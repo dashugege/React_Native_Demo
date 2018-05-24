@@ -42,16 +42,25 @@ const TabNav = createBottomTabNavigator(
         navigationOptions:({ navigation }) =>({
             tabBarIcon: ({ focused, tintColor }) => {
                 const { routeName } = navigation.state;
-                let iconName;
-                if (routeName === 'THome') {
-                    iconName = `ios-information-circle${focused ? '' : '-outline'}`;
-                } else if (routeName === 'TSettings') {
-                    iconName = `ios-options${focused ? '' : '-outline'}`;
+                var iconName = '';
+                if (routeName === 'Home') {
+                    if(focused){
+                        return <Image source={require('../../img/nav_work_pre.png')} style={{width:25,height:25}} />
+                    }else {
+                        return <Image source={require('../../img/nav_work_nor.png')} style={{width:25,height:25}} />
+                    }
+                } else{
+                    if(focused){
+                        return <Image source={require('../../img/nav_mine_pre.png')} style={{width:25,height:25}} />
+                    }else {
+                        return <Image source={require('../../img/nav_mine_nor.png')} style={{width:25,height:25}} />
+                    }
                 }
-
                 // You can return any component that you like here! We usually use an
                 // icon component from react-native-vector-icons
-                return <Ionicons name={iconName} size={25} color={tintColor} />;
+                // return <Ionicons name={iconName} size={25} color={tintColor} />;
+
+                // return <Image source={require('../../img/nav_data_nor.png')} style={{width:25,height:25}} />
             },
         }),
         tabBarOptions: {

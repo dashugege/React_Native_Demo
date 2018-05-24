@@ -70,6 +70,7 @@ react-native run-ios
 React Native 调试方法
 
 https://blog.csdn.net/Cloudox_/article/details/52386495
+https://blog.csdn.net/kill_bugs/article/details/56853304
 
 react−nativelog−ios react-native log-android
 
