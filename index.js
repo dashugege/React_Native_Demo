@@ -7,5 +7,6 @@ import ListView from './js/ListView'
 import LoginPage from './js/LoginPage'
 import HomeScreen from './js/navigation/IHomeScreen'
 import Tapp from './js/BottomTabNavigator/TApp'
+import IPromise from './js/promise/IPromise'
 
-AppRegistry.registerComponent('Demo2', () => Tapp);
+AppRegistry.registerComponent('Demo2', () => IPromise);
