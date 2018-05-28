@@ -9,4 +9,4 @@ import HomeScreen from './js/navigation/IHomeScreen'
 import Tapp from './js/BottomTabNavigator/TApp'
 import IPromise from './js/promise/IPromise'
 
-AppRegistry.registerComponent('Demo2', () => IPromise);
+AppRegistry.registerComponent('Demo2', () => ListView);

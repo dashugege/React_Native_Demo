@@ -6,80 +6,120 @@ import {
     View,
     Button,
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    Image,
 } from 'react-native';
+import RefreshListView , {RefreshState} from "./RefreshListView";
 
 
 
 type Props = {};
+
+var Dimensions = require('Dimensions');
+var width = Dimensions.get('window').width;
+
 export default class ListView extends Component<Props> {
 
 
     constructor(props){
         super(props)
         this.state = {
-            dataArray : [
-
-            ]
-            ,
+            dataArray : [],
+            refreshState: RefreshState.Idle,
         }
+        this.page = 1 ;
     }
 
     render() {
         return (
             <View style={styles.container}>
 
-                <View style={{flexDirection:'row',justifyContent:'flex-start',backgroundColor:'white'}}>
-
-                    <Button style={{width:100,height:40}} title="点击获取网络数据" onPress={this.onButtonPress} />
-
-                </View>
-
-
-
-                <FlatList style={{flex:1}}
-                          data={this.state.dataArray}
-                          renderItem = {this.renderItemView}
-                          keyExtractor={(item, index) => index.toString()}
+                <RefreshListView
+                                refreshState={ this.state.refreshState}
+                                 data={this.state.dataArray}
+                                 renderItem={this.renderItemView}
+                                 keyExtractor={(item, index) => index.toString()}
+                                 onHeaderRefresh={this.onHeaderRefresh}
+                                 onFooterRefresh={this.onFooterRefresh}
+                                style={{backgroundColor:'#FFF'}}
+                                footerRefreshingText= '玩命加载中'
+                                footerFailureText = '我擦嘞，居然失败了'
+                                footerNoMoreDataText= '-我是有底线的-'
+                                footerEmptyDataText= '-好像什么东西都没有-'
                 />
 
             </View>
         );
     }
 
-    onButtonPress = () => {
-        fetch('http://api.github.com/search/repositories?q=javascript&sort=stars')
+    componentWillMount() {
+        this.onHeaderRefresh();
+    }
+
+
+
+
+    onHeaderRefresh = () =>{
+        this.setState({
+            refreshState:RefreshState.HeaderRefreshing,
+        });
+        this.page = 1 ;
+        this.loadData(1,false);
+    };
+
+    onFooterRefresh = () =>{
+
+        this.setState({
+            refreshState:RefreshState.FooterRefreshing,
+        });
+        this.page++;
+        this.loadData(this.page,true);
+    };
+
+    renderItemView = ({ item }) => {
+        return (
+            <View style={{height:113 , backgroundColor:'white' ,flexDirection:'column'} }>
+                <View style={{height:100 , backgroundColor:'white' , marginTop:6,marginBottom:6,flexDirection:'row'} }>
+                    <Image style={{ width:100,height:100 ,backgroundColor:'#EDEDED',
+                        resizeMode: Image.resizeMode.cover , margin:10}} source={{uri:item.value.image}}
+                    />
+                    <View style={{height:100 , backgroundColor:'white' , marginTop:10,marginLeft:10,}}>
+                        <Text style={{color:'black',fontSize:14}}>{item.value.title}</Text>
+                        <Text style={{color:'black',fontSize:14}}>{item.value.binding}</Text>
+                    </View>
+                </View>
+                <View style={{backgroundColor:'#666',height:1,width:width}}/>
+            </View>
+
+        );
+    };
+
+
+    loadData(page,loadMore){
+        let start = (page - 1)*20 ;
+        let path = 'https://api.douban.com/v2/book/search?start='+ start +'&count=20&tag=信息';
+        fetch(path)
             .then((response) => response.json() )
             .then((responseData) => {
-
-                let data = responseData.items ;
-                let temp = [];
-                let i = 0;
+                let data = responseData.books ;
+                let temp = page == 1 ? [] : this.state.dataArray ;
+                let i = temp.length ;
                 data.map(function (item) {
                     temp.push({
                         key: i,
                         value: item,
-                    })
+                    });
                     i++;
-                })
+                });
+
                 this.setState({
-                    dataArray:temp
-                })
+                    dataArray: temp,
+                    refreshState : RefreshState.Idle ,
+                });
             }).catch((error) =>{
-            alert(error)
+                this.page--;
+                alert(error)
         }).done()
-
-    };
-
-
-
-    renderItemView = ({item}) => {
-        return (
-            <View style={{height:50 , backgroundColor:'#999999' , marginTop:10} }>
-                <Text >{item.value.full_name}</Text>
-                <Text >{item.value.name}</Text>
-            </View>
-        );
     }
 
 
